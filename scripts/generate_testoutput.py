@@ -10,14 +10,14 @@ import sys
 
 '''... TODO.
 
-This script needs junit-xml to be installed via pip.
+This script needs junit-xml and statistics to be installed via pip.
 The script has one parameter that defines the number of files
 that will be looked for.
 '''
 
 USERNAME = getpass.getuser()
 CURDIR = os.path.dirname(__file__)
-NUM_FILES = sys.argv[1]
+NUM_FILES = int(sys.argv[1])
 
 def process_map_files():
     '''Reads last 5 map result files from exploration run

@@ -1,9 +1,13 @@
 #!/usr/bin/python
-
 import sys
 import subprocess
 import os
 
+'''The script has to be called with the path to the hector_tracker_install folder
+that should be used.
+'''
+
+HECTOR_TRACKER_INSTALL_PATH = sys.argv[1]
 
 class cd:
     """Context manager for changing the current working directory"""
@@ -17,10 +21,7 @@ class cd:
     def __exit__(self, etype, value, traceback):
         os.chdir(self.savedPath)
 
-installation_folder_path = '/home/hector/stefan-testing/hector_tracker_install'
-print(sys.stdout.encoding)
-
-with cd(installation_folder_path):
+with cd(HECTOR_TRACKER_INSTALL_PATH):
     result = subprocess.check_output('./update.sh')
     if '[build] Failed: No packages failed.' not in result:
         sys.exit([1])

@@ -5,11 +5,19 @@ import glob
 import statistics
 import getpass
 import os
+import sys
 
-'''Documentation todo'''
+
+'''... TODO.
+
+This script needs junit-xml to be installed via pip.
+The script has one parameter that defines the number of files
+that will be looked for.
+'''
 
 USERNAME = getpass.getuser()
 CURDIR = os.path.dirname(__file__)
+NUM_FILES = sys.argv[1]
 
 def process_map_files():
     '''Reads last 5 map result files from exploration run
@@ -18,7 +26,7 @@ def process_map_files():
     '''
     map_files = glob.glob('/home/' + USERNAME+ '/.ros/*_map_data.csv')
     map_files.sort()
-    map_files = map_files[-5:]
+    map_files = map_files[-NUM_FILES:]
     map_results = []
     for map_file in map_files:
         percentage_discovered = 0

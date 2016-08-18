@@ -1,0 +1,46 @@
+//The Jenkins job running this script has the following requirements:
+//Parameters:
+//  -numTrials: String parameter.
+//Plugins:
+//  -publishHTML
+
+
+stage 'Workspace Cleanup'
+node {
+    dir('hector_tracker_install') {
+    deleteDir()
+    }
+    dir('hector_jenkins') {
+    deleteDir()
+    }
+}
+stage 'Installation Stage'
+echo 'Checkouts: Starting'
+node {
+    checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'hector_tracker_install']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/tu-darmstadt-ros-pkg/hector_tracker_install.git']]])
+
+    checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'hector_jenkins']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/tu-darmstadt-ros-pkg/hector_jenkins.git']]])
+}
+echo 'Checkouts: Finished'
+echo 'Workspace check: Starting'
+node {
+    sh './hector_jenkins/scripts/check_if_ros_sourced.py'
+}
+echo 'Workspace check: Finished'
+echo 'Installation: Starting'
+node {
+    sh "./hector_jenkins/scripts/perform_installation.py ${pwd()}/hector_tracker_install/"
+}
+echo 'Installation: Finished'
+stage 'Exploration Stage'
+node {
+    sh """#!/bin/bash -l
+    source hector_tracker_install/devel/setup.bash
+    ./hector_tracker_install/src/exploration_evaluation/scripts/run_looped.sh ${numTrials}
+    """
+}
+stage 'Evaluation Stage'
+node {
+    sh "hector_jenkins/scripts/generate_testoutput.py ${numTrials}"
+    publishHTML(target: [allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'hector_jenkins/scripts/scriptoutputs/html/', reportFiles: 'last_run.html', reportName: 'Exploration Results'])
+}

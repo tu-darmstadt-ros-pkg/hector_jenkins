@@ -85,13 +85,14 @@ def create_html_file(map_results, victim_counts):
     file_to_write.write('<h1>Exploration Evaluation Results</h1>')
     file_to_write.write('<table border="1">')
     file_to_write.write('<tr>')
-    file_to_write.write('<th>Trial Number </th><th>Victims Found</th><th>Final map discovery</th>')
+    file_to_write.write('<th>Trial Number </th><th>Victims Found</th><th>Final map discovery</th><th>Map</th>')
     file_to_write.write('</tr>')
     i = 0
     while i < len(map_results):
         file_to_write.write('<tr>')
         file_to_write.write('<td>' + str(i+1) + '</td><td>' + str(victim_counts[i]) +
                             '</td><td>' + str(map_results[i]) + '%</td>')
+        file_to_write.write('<td><img src="'+ str(i+1) +'.png"></td>')
         file_to_write.write('</tr>')
         i = i + 1
 

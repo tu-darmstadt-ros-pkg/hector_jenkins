@@ -2,12 +2,12 @@
 
 import glob
 import os
-import shutil
 import sys
+import subprocess
 
 '''Script that is used to access the map-folder of
-hector_slam and copy its newest map-file. Afterwards
-deletes all files in map-folder.
+hector_slam and copy its newest map-file (as png). 
+Afterwards deletes all files in map-folder.
 
 The script has to be called with parameters.
 
@@ -19,15 +19,15 @@ The script has to be called with parameters.
 
 SOURCE_FOLDER_PATH = sys.argv[1]
 DESTINATION_FOLDER_PATH = sys.argv[2]
-DESTINATION_FILE_NAME = sys.argv[3]
+DESTINATION_FILE_NAME = sys.argv[3] + '.png'
 
-def copy_last_geotiff():
+def copy_last_geotiff_as_png():
     '''Copies newest geotiff file from SOURCE_FOLDER_PATH to 
     DESTINATION_FOLDER_PATH with DESTINATION_FILE_NAME as new
-    filename.
+    filename and converted to png.
     '''
     source_file = get_newest_file_name()
-    shutil.copy(source_file, DESTINATION_FOLDER_PATH + DESTINATION_FILE_NAME + '.tif')
+    subprocess.call(['convert', source_file, DESTINATION_FOLDER_PATH + DESTINATION_FILE_NAME])
 
 def get_newest_file_name():
     '''Returns absolute path of newest .tif file in SOURCE_FOLDER_PATH.'''
@@ -42,5 +42,5 @@ def clear_source_directory():
         os.remove(f)
 
 
-copy_last_geotiff()
+copy_last_geotiff_as_png()
 clear_source_directory()

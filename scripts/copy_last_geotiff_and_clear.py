@@ -9,6 +9,9 @@ import subprocess
 hector_slam and copy its newest map-file (as png). 
 Afterwards deletes all files in map-folder.
 
+To be able to execute the command "convert" the package
+imagemagick has to be installed.
+
 The script has to be called with parameters.
 
 :param 1: Path to hector_slam/hector_geotiff/maps.

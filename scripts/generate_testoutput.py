@@ -8,7 +8,8 @@ import os
 import sys
 
 
-'''... TODO.
+'''This script generates testoutputs that will be used by the HTMLPublisher
+plugin to display results of the build.
 
 This script needs junit-xml and statistics to be installed via pip.
 The script has one parameter that defines the number of files
@@ -85,7 +86,8 @@ def create_html_file(map_results, victim_counts):
     file_to_write.write('<h1>Exploration Evaluation Results</h1>')
     file_to_write.write('<table border="1">')
     file_to_write.write('<tr>')
-    file_to_write.write('<th>Trial Number </th><th>Victims Found</th><th>Final map discovery</th><th>Map</th>')
+    file_to_write.write(('<th>Trial Number </th><th>Victims Found</th>'
+                         + '<th>Final map discovery</th><th>Map</th><th>Logfiles</th>'))
     file_to_write.write('</tr>')
     i = 0
     while i < len(map_results):
@@ -93,6 +95,7 @@ def create_html_file(map_results, victim_counts):
         file_to_write.write('<td>' + str(i+1) + '</td><td>' + str(victim_counts[i]) +
                             '</td><td>' + str(map_results[i]) + '%</td>')
         file_to_write.write('<td><img src="'+ str(i+1) +'.png"></td>')
+        file_to_write.write('<td><a href="'+ str(i+1) +'.zip">Log</a></td>')
         file_to_write.write('</tr>')
         i = i + 1
 

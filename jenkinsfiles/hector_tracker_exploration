@@ -1,6 +1,9 @@
 //The Jenkins job running this script has the following requirements:
 //Parameters:
-//  -numTrials: String parameter.
+//  -numTrials: String parameter. Default value: 5
+//  -arena: String parameter. Default value: Search Victims
+//  -behavior: String parameter. Default value: maze_many_victims
+//  -simtime: String parameter. Default value: 600
 //Plugins:
 //  -publishHTML
 
@@ -36,7 +39,7 @@ stage 'Exploration Stage'
 node {
     sh """#!/bin/bash -l
     source hector_tracker_install/devel/setup.bash
-    ./hector_tracker_install/src/exploration_evaluation/scripts/run_looped.sh ${numTrials} "python hector_jenkins/scripts/copy_last_geotiff_and_clear.py hector_tracker_install/src/hector_slam/hector_geotiff/maps/ hector_jenkins/scripts/scriptoutputs/html/"
+    ./hector_tracker_install/src/exploration_evaluation/scripts/run_looped.sh ${numTrials} ${simtime} "${behavior}" $arena "python hector_jenkins/scripts/copy_last_geotiff_and_clear.py hector_tracker_install/src/hector_slam/hector_geotiff/maps/ hector_jenkins/scripts/scriptoutputs/html/"
     """
 }
 stage 'Evaluation Stage'

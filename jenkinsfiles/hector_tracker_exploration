@@ -17,10 +17,6 @@ node {
     deleteDir()
     }
 }
-node {
-    sh './hector_jenkins/scripts/check_if_ros_sourced.py'
-}
-
 
 stage 'Installation'
 echo 'Checkouts: Starting'
@@ -30,6 +26,11 @@ node {
     checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'hector_jenkins']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/tu-darmstadt-ros-pkg/hector_jenkins.git']]])
 }
 echo 'Checkouts: Finished'
+
+node {
+    sh './hector_jenkins/scripts/check_if_ros_sourced.py'
+}
+
 echo 'Installation: Starting'
 node {
     sh "./hector_jenkins/scripts/perform_installation.py ${pwd()}/hector_tracker_install/"

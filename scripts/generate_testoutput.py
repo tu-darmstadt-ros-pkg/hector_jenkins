@@ -20,27 +20,6 @@ USERNAME = getpass.getuser()
 CURDIR = os.path.dirname(__file__)
 NUM_FILES = int(sys.argv[1])
 
-def process_map_files():
-    '''Reads last 5 map result files from exploration run
-    and returns final percentage of map discovery for each
-    run a list.
-    '''
-    map_files = glob.glob('/home/' + USERNAME+ '/.ros/*_map_data.csv')
-    map_files.sort()
-    map_files = map_files[-NUM_FILES:]
-    map_results = []
-    for map_file in map_files:
-        percentage_discovered = 0
-        currently_open_file = open(map_file, 'r')
-        lines = currently_open_file.readlines()
-        if len(lines) != 0:
-            percentage_discovered = lines[-1].split(',')[1]
-
-        map_results.append(percentage_discovered)
-        currently_open_file.close()
-
-    return map_results
-
 
 def process_victim_files():
     '''Reads last 5 victim files from exploration run
@@ -78,7 +57,7 @@ def create_junit_file(victim_count):
         TestSuite.to_file(f, [ts], prettyprint=False)
 
 
-def create_html_file(map_results, victim_counts):
+def create_html_file(victim_counts):
     '''Creates a HTML file that contains a table displaying
     the map exploration and victim found results for all runs.
     '''
@@ -87,13 +66,13 @@ def create_html_file(map_results, victim_counts):
     file_to_write.write('<table border="1">')
     file_to_write.write('<tr>')
     file_to_write.write(('<th>Trial Number </th><th>Victims Found</th>'
-                         + '<th>Final map discovery</th><th>Map</th><th>Logfiles</th>'))
+                         + '<th>Map</th><th>Logfiles</th>'))
     file_to_write.write('</tr>')
     i = 0
-    while i < len(map_results):
+    while i < len(victim_counts):
         file_to_write.write('<tr>')
         file_to_write.write('<td>' + str(i+1) + '</td><td>' + str(victim_counts[i]) +
-                            '</td><td>' + str(map_results[i]) + '%</td>')
+                            '</td>')
         file_to_write.write('<td><img src="'+ str(i+1) +'.png"></td>')
         file_to_write.write('<td><a href="'+ str(i+1) +'.zip">Log</a></td>')
         file_to_write.write('</tr>')
@@ -103,8 +82,8 @@ def create_html_file(map_results, victim_counts):
     file_to_write.close()
 
 
-map_results = process_map_files()
 victim_counts = process_victim_files()
 
 create_junit_file(statistics.median(victim_counts))
-create_html_file(map_results, victim_counts)
+create_html_file(victim_counts)
+

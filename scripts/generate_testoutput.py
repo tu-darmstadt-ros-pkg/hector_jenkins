@@ -25,20 +25,17 @@ def process_victim_files():
     '''Reads last NUM_FILES victim files from exploration run
     and returns final number of found victims as a list.
     '''
-    victim_files = glob.glob('/home/' + USERNAME + '/.ros/*_victim_data.csv')
+    victim_files = glob.glob(os.path.join(CURDIR, 'scriptoutputs/html/*.csv'))
     victim_files.sort()
     victim_files = victim_files[-NUM_FILES:]
     victim_counts = []
     for victim_file in victim_files:
-        num_victims = 0
         currently_open_file = open(victim_file, 'r')
-        lines = currently_open_file.readlines()
-        if len(lines) != 0:
-            num_victims = num_victims + 1
-
+        #first 6 lines contain only file information.
+        lines = currently_open_file.readlines()[6:]
+        victim_counts.append(len(lines))
         currently_open_file.close()
-        victim_counts.append(num_victims)
-
+        
     return victim_counts
 
 

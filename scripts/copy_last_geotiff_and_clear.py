@@ -29,14 +29,26 @@ def copy_last_geotiff_as_png():
     DESTINATION_FOLDER_PATH with DESTINATION_FILE_NAME as new
     filename and converted to png.
     '''
-    source_file = get_newest_file_name()
+    source_file = get_newest_file_name('*.tif')
     subprocess.call(['convert', source_file, DESTINATION_FOLDER_PATH + DESTINATION_FILE_NAME])
 
-def get_newest_file_name():
-    '''Returns absolute path of newest .tif file in SOURCE_FOLDER_PATH.'''
-    files = filter(os.path.isfile, glob.glob(SOURCE_FOLDER_PATH + "*.tif"))
+
+def get_newest_file_name(searchpattern):
+    '''Returns absolute path of newest .tif file in SOURCE_FOLDER_PATH.
+
+    :param searchpattern: Searchpattern to look for.
+    :returns: Absolute path of newest file that matches the searchpattern.
+    '''
+    files = filter(os.path.isfile, glob.glob(SOURCE_FOLDER_PATH + searchpattern))
     files.sort(key=lambda x: os.path.getmtime(x))
     return files[-1]
+
+
+def copy_last_victim_csv():
+    '''Copies last victim-csv file from SOURCE_FOLDER_PATH.'''
+    source_file = get_newest_file_name('*_victims.csv')
+    subprocess.call(['cp', source_file, DESTINATION_FOLDER_PATH + sys.argv[3] + '.csv'])
+
 
 def clear_source_directory():
     '''Removes all files from SOURCE_FOLDER_PATH.'''
@@ -46,4 +58,5 @@ def clear_source_directory():
 
 
 copy_last_geotiff_as_png()
+copy_last_victim_csv()
 clear_source_directory()

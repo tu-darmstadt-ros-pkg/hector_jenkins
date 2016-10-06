@@ -54,4 +54,5 @@ stage 'Evaluation'
 node {
     sh "hector_jenkins/scripts/generate_testoutput.py ${numTrials}"
     publishHTML(target: [allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'hector_jenkins/scripts/scriptoutputs/html/', reportFiles: 'last_run.html', reportName: 'Exploration Results'])
+    junit 'hector_jenkins/scripts/scriptoutputs/junit/*.xml'
 }

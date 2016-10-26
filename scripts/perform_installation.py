@@ -23,6 +23,7 @@ class cd:
 
 with cd(HECTOR_TRACKER_INSTALL_PATH):
     result = subprocess.check_output('./update.sh')
+    print("Output of ./update.sh: \n" + result)
     if '[build] Failed: No packages failed.' not in result:
         sys.exit([1])
 
@@ -30,9 +31,14 @@ with cd(HECTOR_TRACKER_INSTALL_PATH):
                              'integration_testing.rosinstall', 'icp_mapping.rosinstall']
     for optional_requirement in optional_requirements:
         commandList = ('wstool merge optional_installs/' + optional_requirement).split(' ')
-        print subprocess.check_output(commandList)
+        result = subprocess.check_output(commandList)
+        print("Output of wstool merge:\n" + result )
 
-    print subprocess.check_output(['wstool', 'update'])
+    result = subprocess.check_output(['wstool', 'update'])
+    print("Output of wstool update: \n" + result)
     result = subprocess.check_output(['catkin', 'build'])
+    print("Output of catkin build: \n" + result)
     if '[build] Failed: No packages failed.' not in result:
         sys.exit([1])
+
+

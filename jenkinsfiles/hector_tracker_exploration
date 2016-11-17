@@ -38,7 +38,7 @@ node {
             sh """#!/bin/bash -l
             env
             source hector_tracker_install/devel/setup.bash
-            DISPLAY=:0 ./hector_tracker_install/src/exploration_evaluation/scripts/run_looped.sh ${numTrials} ${simtime} "${behavior}" $arena "python hector_jenkins/scripts/copy_last_geotiff_and_clear.py hector_tracker_install/src/hector_slam/hector_geotiff/maps/ hector_jenkins/scripts/scriptoutputs/html/" "python hector_jenkins/scripts/save_latest_log.py hector_jenkins/scripts/scriptoutputs/html/"
+            DISPLAY=:0 ./hector_tracker_install/src/hector_ci_tools/startscripts/run_hector.sh ${numTrials} ${simtime} "${behavior}" $arena "python hector_jenkins/scripts/copy_last_geotiff_and_clear.py hector_tracker_install/src/hector_slam/hector_geotiff/maps/ hector_jenkins/scripts/scriptoutputs/html/" "python hector_jenkins/scripts/save_latest_log.py hector_jenkins/scripts/scriptoutputs/html/"
             """
         }
     }

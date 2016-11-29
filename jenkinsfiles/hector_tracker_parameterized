@@ -1,0 +1,63 @@
+//The Jenkins job running this script has the following requirements:
+//Parameters:
+//  -numTrials: String parameter. Default value: 5
+//  -arena: String parameter. Default value: Search Victims
+//  -behavior: String parameter. Default value: maze_many_victims
+//  -simtime: String parameter. Default value: 600
+//Plugins:
+//  -publishHTML
+
+def err = null
+
+try {
+node {
+    stage ('Workspace Cleanup') {
+        dir('hector_tracker_install') {
+            deleteDir()
+        }
+        dir('hector_jenkins') {
+            deleteDir()
+        }
+    }
+
+    stage ('Installation') {
+        echo 'Checkouts: Starting'
+        checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'hector_tracker_install']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/tu-darmstadt-ros-pkg/hector_tracker_install.git']]])
+        checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'hector_jenkins']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/tu-darmstadt-ros-pkg/hector_jenkins.git']]])
+        echo 'Checkouts: Finished'
+
+        sh './hector_jenkins/scripts/check_if_ros_sourced.py'
+        
+        echo 'Installation: Starting'
+        sh "./hector_jenkins/scripts/perform_installation.py ${pwd()}/hector_tracker_install/"
+        echo 'Installation: Finished'
+    }
+
+    stage ('Simulation') {
+        wrap([$class: 'Xvfb']) {
+            sh """#!/bin/bash -l
+            env
+            source hector_tracker_install/devel/setup.bash
+            DISPLAY=:0 ./hector_tracker_install/src/hector_ci_tools/startscripts/run_hector.sh ${numTrials} ${simtime} "${behavior}" $arena "python hector_jenkins/scripts/copy_last_geotiff_and_clear.py hector_tracker_install/src/hector_slam/hector_geotiff/maps/ hector_jenkins/scripts/scriptoutputs/html/" "python hector_jenkins/scripts/save_latest_log.py hector_jenkins/scripts/scriptoutputs/html/"
+            """
+        }
+    }
+
+    stage ('Evaluation') {
+        sh "hector_jenkins/scripts/generate_testoutput.py ${numTrials}"
+        publishHTML(target: [allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'hector_jenkins/scripts/scriptoutputs/html/', reportFiles: 'last_run.html', reportName: 'Exploration Results'])
+    }
+}
+} catch (caughtError) {
+    err = caughtError
+    node {
+        emailext body: 'Please have a look at http://asgard.sim.informatik.tu-darmstadt.de', recipientProviders: [[$class: 'RequesterRecipientProvider'], [$class: 'DevelopersRecipientProvider'], [$class: 'CulpritsRecipientProvider']], subject: 'Build hector_tracker_exploration failed'
+    }
+        
+} finally {
+    /* Re-throw exception to propagate error */
+    if (err) {
+        throw err
+    }
+}
+

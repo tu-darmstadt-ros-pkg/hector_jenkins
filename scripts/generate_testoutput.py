@@ -19,7 +19,7 @@ that will be looked for.
 USERNAME = getpass.getuser()
 CURDIR = os.path.dirname(__file__)
 GEOTIFFDIR = sys.argv[1]
-NUM_FILES = int(sys.argv[1])
+NUM_FILES = int(sys.argv[2])
 
 
 def process_victim_files():

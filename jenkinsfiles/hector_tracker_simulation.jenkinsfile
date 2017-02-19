@@ -3,8 +3,8 @@
 //Description: Job performs a simulation of Team Hectors tracked robot and evaluates it.
 //Required job parameters:
 //  -numTrials: String parameter. Default value: 5, Number of simulation trials that will be done.
-//  -arena: String parameter. Default value: Search Victims, Name of the arena that will be used during simulation.
-//  -behavior: String parameter. Default value: maze_many_victims, Name of the FlexBE behavior that will be started in simulation.
+//  -arena: String parameter. Default value: maze_many_victims, Name of the arena that will be used during simulation.
+//  -behavior: String parameter. Default value: Explore and Search Victims, Name of the FlexBE behavior that will be started in simulation.
 //  -simtime: String parameter. Default value: 600, Simulation time (in seconds) for each simulation trial.
 
 def err = null
@@ -12,20 +12,28 @@ def err = null
 try {
     node {
         stage ('Cleanup') {
-            echo "TODO"
+            sh """#!/bin/bash -l
+            rm -rf scriptoutputs/
+            cd ../hector_tracker_installation/hector_jenkins/
+            rm -rf scripts/scriptoutputs/html/
+            rm -rf scripts/scriptoutputs/junit/
+            """
         }
         stage ('Simulation') {
                 sh """#!/bin/bash -l
                 cd ../hector_tracker_installation/hector_tracker_install/
                 source devel/setup.bash
-                DISPLAY=:0 stdbuf -oL ./src/hector_ci_tools/startscripts/run_hector.sh ${numTrials} ${simtime} "${behavior}" $arena "python hector_jenkins/scripts/copy_last_geotiff_and_clear.py hector_tracker_install/src/hector_slam/hector_geotiff/maps/ hector_jenkins/scripts/scriptoutputs/html/" "python hector_jenkins/scripts/save_latest_log.py hector_jenkins/scripts/scriptoutputs/html/"
+                DISPLAY=:0 stdbuf -oL ./src/hector_ci_tools/startscripts/run_hector.sh ${numTrials} ${simtime} "${behavior}" $arena
                 """
         }
-
         stage ('Evaluation') {
-            sh "hector_jenkins/scripts/generate_testoutput.py ${numTrials}"
-            publishHTML(target: [allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'hector_jenkins/scripts/scriptoutputs/html/', reportFiles: 'last_run.html', reportName: 'Exploration Results'])
-            junit 'hector_jenkins/scripts/scriptoutputs/junit/*.xml'
+            sh """#!/bin/bash -l
+             cd ../hector_tracker_installation/hector_jenkins/
+             ./scripts/generate_testoutput.py ${numTrials}
+             cp -r scripts/scriptoutputs/ ../../hector_tracker_simulation/
+            """
+            publishHTML(target: [allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'scriptoutputs/html/', reportFiles: 'last_run.html', reportName: 'Exploration Results'])
+            junit 'scriptoutputs/junit/*.xml'
         }
     }
 } catch (caughtError) {

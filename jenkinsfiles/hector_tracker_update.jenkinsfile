@@ -7,9 +7,10 @@
 node {
         stage ('Update workspace') {
             sh """#!/bin/bash -l
-            source ../hector_tracker_installation/hector_tracker_install/devel/setup.bash
+            cd ../hector_tracker_installation/hector_tracker_install/
+            source devel/setup.bash
             wstool update
-            wstool build
+            catkin build
         """
         }
 }

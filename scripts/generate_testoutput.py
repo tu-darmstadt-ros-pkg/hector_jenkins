@@ -17,9 +17,9 @@ that will be looked for.
 '''
 
 USERNAME = getpass.getuser()
-CURDIR = os.path.dirname(__file__)
 GEOTIFFDIR = sys.argv[1]
 NUM_FILES = int(sys.argv[2])
+OUTPUTDIR = sys.argv[3]
 
 
 def process_victim_files():
@@ -51,7 +51,7 @@ def create_junit_file(victim_count):
         i = i +1
 
     ts = TestSuite("my test suite", test_cases)
-    with open(os.path.join(CURDIR, 'scriptoutputs/junit/output.xml'), 'w') as f:
+    with open(os.path.join(OUTPUTDIR, 'junit/output.xml'), 'w') as f:
         TestSuite.to_file(f, [ts], prettyprint=False)
 
 
@@ -59,7 +59,7 @@ def create_html_file(victim_counts):
     '''Creates a HTML file that contains a table displaying
     the map exploration and victim found results for all runs.
     '''
-    file_to_write = open(os.path.join(CURDIR, 'scriptoutputs/html/last_run.html'), 'w')
+    file_to_write = open(os.path.join(OUTPUTDIR, 'html/last_run.html'), 'w')
     file_to_write.write('<h1>Exploration Evaluation Results</h1>')
     file_to_write.write('<table border="1">')
     file_to_write.write('<tr>')

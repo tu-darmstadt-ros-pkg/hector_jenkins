@@ -1,0 +1,15 @@
+//Jenkinsfile for asgard.sim.informatik.tu-darmstadt
+//Job: hector_tracker_simulation.
+//Description: Job performs an update of the hector_tracker_installation workspace.
+//Required job parameters:
+//  None
+
+node {
+        stage ('Update workspace') {
+            sh """#!/bin/bash -l
+            source ../hector_tracker_installation/hector_tracker_install/devel/setup.bash
+            wstool update
+            wstool build
+        """
+        }
+}

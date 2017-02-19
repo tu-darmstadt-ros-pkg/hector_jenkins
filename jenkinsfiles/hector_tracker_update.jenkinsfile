@@ -5,12 +5,17 @@
 //  None
 
 node {
-        stage ('Update workspace') {
+        stage ('Update hector_tracker_install') {
             sh """#!/bin/bash -l
             cd ../hector_tracker_installation/hector_tracker_install/
             source devel/setup.bash
             wstool update
             catkin build
         """
+        }
+        stage ('Update hector_jenkins') {
+            sh "rm -rf ../hector_tracker_installation/hector_jenkins/"
+            checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'hector_jenkins']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/tu-darmstadt-ros-pkg/hector_jenkins.git']]])
+            sh "mv hector_jenkins/ ../hector_tracker_installation/"
         }
 }

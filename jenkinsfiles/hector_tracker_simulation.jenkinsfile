@@ -25,7 +25,7 @@ try {
                 sh """#!/bin/bash -l
                 cd ../hector_tracker_installation/hector_tracker_install/
                 source devel/setup.bash
-                DISPLAY=:0 stdbuf -oL ./src/hector_ci_tools/startscripts/run_hector.sh ${numTrials} ${simtime} "${behavior}" $arena
+                DISPLAY=:0 stdbuf -oL ./src/hector_ci_tools/startscripts/run_hector ${numTrials} ${simtime} "${behavior}" $arena
                 """
                 echo "TODO: Collect results."
             }

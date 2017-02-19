@@ -18,6 +18,7 @@ that will be looked for.
 
 USERNAME = getpass.getuser()
 CURDIR = os.path.dirname(__file__)
+GEOTIFFDIR = sys.argv[1]
 NUM_FILES = int(sys.argv[1])
 
 
@@ -25,7 +26,7 @@ def process_victim_files():
     '''Reads last NUM_FILES victim files from exploration run
     and returns final number of found victims as a list.
     '''
-    victim_files = glob.glob(os.path.join(CURDIR, 'scriptoutputs/html/*.csv'))
+    victim_files = glob.glob(os.path.join(GEOTIFFDIR, '*.csv'))
     victim_files.sort()
     victim_files = victim_files[-NUM_FILES:]
     victim_counts = []

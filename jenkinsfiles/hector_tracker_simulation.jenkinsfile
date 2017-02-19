@@ -14,9 +14,13 @@ try {
         stage ('Cleanup') {
             sh """#!/bin/bash -l
             rm -rf scriptoutputs/
+            rm -rf geotiffs/
+            mkdir geotiffs
             cd ../hector_tracker_installation/hector_jenkins/
             rm -rf scripts/scriptoutputs/html/
+            mkdir scripts/scriptoutputs/html
             rm -rf scripts/scriptoutputs/junit/
+            mkdir scripts/scriptoutputs/junit
             """
         }
         stage ('Simulation') {
@@ -25,19 +29,24 @@ try {
                 sh """#!/bin/bash -l
                 cd ../hector_tracker_installation/hector_tracker_install/
                 source devel/setup.bash
-                DISPLAY=:0 stdbuf -oL ./src/hector_ci_tools/startscripts/run_hector ${numTrials} ${simtime} "${behavior}" $arena
+                DISPLAY=:0 stdbuf -oL ./src/hector_ci_tools/startscripts/run_hector ${simtime} "${behavior}" $arena
                 """
                 echo "TODO: Collect results."
+                sh """#!/bin/bash -l
+                cd ../hector_tracker_installation/
+                ./hector_jenkins/scripts/copy_last_geotiff_and_clear.py hector_tracker_install/src/hector_slam/hector_geotiff/maps/ ../hector_tracker_simulation/geotiffs/ ${i}
+                """
             }
         }
         stage ('Evaluation') {
             sh """#!/bin/bash -l
              cd ../hector_tracker_installation/hector_jenkins/
-             ./scripts/generate_testoutput.py ${numTrials}
+             ./scripts/generate_testoutput.py /var/lib/jenkins/workspace/hector_tracker_simulation/geotiffs/ ${numTrials} /var/lib/jenkins/workspace/hector_tracker_installation/hector_jenkins/scripts/scriptoutputs/
              cp -r scripts/scriptoutputs/ ../../hector_tracker_simulation/
             """
+            sh "cp geotiffs/* scriptoutputs/html/"
             publishHTML(target: [allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'scriptoutputs/html/', reportFiles: 'last_run.html', reportName: 'Exploration Results'])
-            junit 'scriptoutputs/junit/*.xml'
+            junit allowEmptyResults: true, testResults: 'scriptoutputs/junit/*.xml'
         }
     }
 } catch (caughtError) {

@@ -23,6 +23,9 @@ try {
             mkdir scripts/scriptoutputs/junit
             """
         }
+        stage ('Build hector_tracker_installation') {
+            build 'hector_tracker_installation'
+        }
         stage ('Simulation') {
             int num = numTrials as Integer
             for(int i = 0; i < num; i++) {

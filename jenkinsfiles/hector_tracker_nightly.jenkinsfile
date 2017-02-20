@@ -37,15 +37,15 @@ try {
 
                 sh """#!/bin/bash -l
                 cd ../hector_tracker_installation/
-                ./hector_jenkins/scripts/copy_last_geotiff_and_clear.py hector_tracker_install/src/hector_slam/hector_geotiff/maps/ ../hector_tracker_simulation/geotiffs/ ${i+1}
+                ./hector_jenkins/scripts/copy_last_geotiff_and_clear.py hector_tracker_install/src/hector_slam/hector_geotiff/maps/ ../hector_tracker_nightly/geotiffs/ ${i+1}
                 """
             }
         }
         stage ('Evaluation') {
             sh """#!/bin/bash -l
              cd ../hector_tracker_installation/hector_jenkins/
-             ./scripts/generate_testoutput.py /var/lib/jenkins/workspace/hector_tracker_simulation/geotiffs/ ${numTrials} /var/lib/jenkins/workspace/hector_tracker_installation/hector_jenkins/scripts/scriptoutputs/
-             cp -r scripts/scriptoutputs/ ../../hector_tracker_simulation/
+             ./scripts/generate_testoutput.py /var/lib/jenkins/workspace/hector_tracker_nightly/geotiffs/ ${numTrials} /var/lib/jenkins/workspace/hector_tracker_installation/hector_jenkins/scripts/scriptoutputs/
+             cp -r scripts/scriptoutputs/ ../../hector_tracker_nightly/
             """
             sh "cp geotiffs/* scriptoutputs/html/"
             publishHTML(target: [allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'scriptoutputs/html/', reportFiles: 'last_run.html', reportName: 'Exploration Results'])
@@ -55,7 +55,7 @@ try {
 } catch (caughtError) {
     err = caughtError
     node {
-        emailext body: 'Please have a look at https://asgard.sim.informatik.tu-darmstadt.de/job/hector_tracker_simulation/. ', recipientProviders: [[$class: 'RequesterRecipientProvider']], subject: 'Build-Job hector_tracker_simulation failed.', to: 'stefan@stefan-wegener.eu'
+        emailext body: 'Please have a look at https://asgard.sim.informatik.tu-darmstadt.de/job/hector_tracker_nightly/. ', recipientProviders: [[$class: 'RequesterRecipientProvider']], subject: 'Build-Job hector_tracker_nightly failed.', to: 'stefan@stefan-wegener.eu'
     }
 } finally {
     /* Re-throw exception to propagate error */
